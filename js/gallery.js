@@ -103,15 +103,12 @@ gallery.addEventListener('click', event => {
 
     function handleClosing(event) {
         if (event.key === 'Escape' && instance.visible() === true) {
-            instance.close();
+          instance.close();
+          gallery.removeEventListener('keydown', handleClosing);
         }
     }
 
     gallery.addEventListener('keydown', handleClosing);
-
-    instance.on('close', () => {
-        gallery.removeEventListener('keydown', handleClosing);
-    });
 });
 
 
