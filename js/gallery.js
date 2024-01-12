@@ -65,7 +65,7 @@ const images = [
 ];
 
 const gallery = document.querySelector('.gallery');
-let fragment = '';
+let fragment = [];
 
 images.forEach(({ preview, original, description }) => {
 
@@ -81,34 +81,38 @@ images.forEach(({ preview, original, description }) => {
     liItem.classList.add('item');
     aItem.classList.add('item-link');
     imgItem.classList.add('item-img');
-    fragment += liItem.outerHTML;
+    fragment.push(liItem);
 });
 
-gallery.innerHTML = fragment;
+gallery.append(...fragment);
 
 gallery.addEventListener('click', event => {
-    event.preventDefault();
+  event.preventDefault();
 
-    if (event.target.nodeName !== 'IMG') {
-        return
+  if (event.target.nodeName !== 'IMG') {
+    return
+  }
+
+  const largePhoto = event.target.getAttribute('data-source');
+  
+  function handleClosing(event) {
+    if (event.key === 'Escape') {
+      instance.close();
     }
-
-    const largePhoto = event.target.getAttribute('data-source');
-
-    const instance = basicLightbox.create(`
+  } 
+  
+  const instance = basicLightbox.create(`
     <img src="${largePhoto}" width="800" height="600">
-    `);
+    `, {
+      onShow: () => {
+        window.addEventListener('keydown', handleClosing);
+      },
+      onClose: () => {
+        window.removeEventListener('keydown', handleClosing);
+      },
+  });
 
-    instance.show();
-
-    function handleClosing(event) {
-        if (event.key === 'Escape' && instance.visible() === true) {
-          instance.close();
-          gallery.removeEventListener('keydown', handleClosing);
-        }
-    }
-
-    gallery.addEventListener('keydown', handleClosing);
+  instance.show();
 });
 
 
